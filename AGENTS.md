@@ -34,6 +34,44 @@ General context lives in [README.md](./README.md) at the repository root.
 - Run `cargo test --workspace --all-features` all tests MUST be passed
 - Run `cargo llvm-cov --workspace --all-features --fail-under-lines 80` for checking the test coverage level and ensure that it's not decreased for changed code (baseline >= 80%)
 
+## Project Constitution — Mandatory for Every Agent
+
+These rules apply to every agent, every task, and every pull request in this
+repository. Read [docs/review-lessons.md](./docs/review-lessons.md) before
+starting non-trivial work. A green test or CI result is not the completion
+boundary.
+
+- MUST write the issue contract before editing: observable behavior, supported
+  platforms, defaults, user operation order, and a minimal reproduction.
+- MUST compare the branch with current `main`, rebase stale stacked branches
+  before review, and classify every changed path as issue work, regression fix,
+  or unrelated work. Remove unrelated changes from the PR.
+- MUST read every GraphQL review thread, including resolved and outdated
+  threads, and classify each comment as `ACCEPT`, `REJECT`, or `CLARIFY`.
+  Stop and ask when a comment changes scope or leaves behavior unspecified.
+- MUST trace the complete behavior path: focus and ownership, event routing,
+  reporting identifiers, side effects, shutdown, and equivalent user paths.
+  Test normal and alternate paths, including shortcut and context-menu paths.
+- MUST treat each platform conditional as separate behavior. Add target CI or a
+  portable selector test for every branch, and report real-OS or real-device
+  behavior as unverified when it was not executed.
+- MUST test asynchronous state beyond the happy path: in-flight work, newer
+  edits, stale completion, reset or reload, failure, and retry.
+- MUST write a failing behavioral test before each behavior change. Tests MUST
+  avoid wall-clock scheduling, ambient host state, synthetic production values,
+  and source-text assertions.
+- MUST run all repository gates and perform the real user operation after tests
+  pass. Unit tests and CI do not prove GUI, hardware, synchronization, or
+  non-current-platform behavior.
+- MUST keep review handoff narrow: push only the verified diff, reply with
+  evidence, and never resolve review threads without explicit authorization.
+- MUST record any skipped gate under `Not Verified`; never silently downgrade a
+  missing platform, runtime, integration, or product-flow check.
+
+The detailed conclusions and examples are maintained in
+`docs/review-lessons.md`. When this constitution conflicts with convenience,
+speed, or an optimistic assumption, this constitution wins.
+
 ## Terminal emulation
 
 The VTE parser must cover the full xterm/ECMA-48 sequence set.

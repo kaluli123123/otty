@@ -479,7 +479,8 @@ impl<'a, T: Clone + PartialEq> InputManager<'a, T> {
                 iced::event::Status::Captured
             },
             BindingAction::Paste => {
-                if let Some(data) = clipboard.read(ClipboardKind::Standard) {
+                if let Some(data) = crate::clipboard::read_paste_text(clipboard)
+                {
                     let input: Vec<u8> = data.bytes().collect();
                     publisher(crate::Event::Write {
                         id: self.terminal_id,
@@ -1148,6 +1149,25 @@ mod tests {
 
         use super::*;
 
+        fn double_click_at(position: Point) -> mouse::Click {
+            for _ in 0..16 {
+                let first_click =
+                    mouse::Click::new(position, mouse::Button::Left, None);
+                let second_click = mouse::Click::new(
+                    position,
+                    mouse::Button::Left,
+                    Some(first_click),
+                );
+                if second_click.kind() == mouse::click::Kind::Double {
+                    return second_click;
+                }
+            }
+
+            panic!(
+                "test could not construct a double click within 16 attempts"
+            );
+        }
+
         #[test]
         fn mouse_mode_activated() {
             let mut state = TerminalViewState::new();
@@ -1314,16 +1334,7 @@ mod tests {
             state.hovered_block_kind = Some(BlockKind::Command);
             state.selected_block_id = Some(String::from("block-1"));
             state.selected_block_kind = Some(BlockKind::Command);
-            let first_click = mouse::Click::new(
-                Point { x: 0.0, y: 0.0 },
-                mouse::Button::Left,
-                None,
-            );
-            state.last_click = Some(mouse::Click::new(
-                Point { x: 0.0, y: 0.0 },
-                mouse::Button::Left,
-                Some(first_click),
-            ));
+            state.last_click = Some(double_click_at(Point { x: 0.0, y: 0.0 }));
             let bindings = BindingsLayout::<()>::new();
             let mut commands = Vec::new();
             let mut publish = |event| commands.push(event);
