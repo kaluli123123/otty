@@ -117,11 +117,24 @@
     "err_invalid_port": "ポートには数値を指定してください。",
     "err_missing_custom_draft": "カスタムコマンドの下書きが見つかりません。",
     "err_missing_ssh_draft": "SSH コマンドの下書きが見つかりません。",
+    "err_ssh_port_positive": "SSH ポートは 0 より大きい値である必要があります。",
+    "err_missing_target_folder": "対象フォルダーが見つかりません。",
+    "err_missing_parent_folder": "親フォルダーが見つかりません。",
+    "err_command_no_longer_exists": "コマンドはもう存在しません。",
 
     "tpl_edit_tab_title": "編集: {title}",
     "tpl_launch_failed_title": "「{title}」の起動に失敗しました",
     "tpl_launch_failed_body": "コマンド: {command}\nエラー: {error}",
     "tpl_terminal_init_failed": "ターミナルタブの初期化に失敗しました: {error}",
-    "tpl_palette_fallback_label": "色 {index}"
+    "tpl_palette_fallback_label": "色 {index}",
+    "tpl_ssh_connection_failed": "SSH 接続に失敗しました：{error}",
+    "tpl_working_directory_not_found": "作業ディレクトリが見つかりません：{path}",
+    "tpl_working_directory_not_directory": "作業ディレクトリはディレクトリではありません：{path}",
+    "tpl_identity_file_not_found": "ID ファイルが見つかりません：{path}",
+    "tpl_identity_file_not_file": "ID ファイルはファイルではありません：{path}",
+    "tpl_program_not_found_in_path": "PATH 内にプログラムが見つかりません：{program}",
+    "tpl_program_not_found": "プログラムが見つかりません：{program}",
+    "tpl_program_is_directory": "プログラムはディレクトリです：{program}",
+    "tpl_program_not_executable": "プログラムを実行できません：{program}"
   }
 }

@@ -117,11 +117,24 @@
     "err_invalid_port": "Le port doit être un nombre.",
     "err_missing_custom_draft": "Brouillon de commande personnalisée introuvable.",
     "err_missing_ssh_draft": "Brouillon de commande SSH introuvable.",
+    "err_ssh_port_positive": "Le port SSH doit être supérieur à 0.",
+    "err_missing_target_folder": "Le dossier cible est introuvable.",
+    "err_missing_parent_folder": "Le dossier parent est introuvable.",
+    "err_command_no_longer_exists": "La commande n’existe plus.",
 
     "tpl_edit_tab_title": "Modifier : {title}",
     "tpl_launch_failed_title": "Échec du lancement de « {title} »",
     "tpl_launch_failed_body": "Commande : {command}\nErreur : {error}",
     "tpl_terminal_init_failed": "Échec de l'initialisation de l'onglet de terminal : {error}",
-    "tpl_palette_fallback_label": "Couleur {index}"
+    "tpl_palette_fallback_label": "Couleur {index}",
+    "tpl_ssh_connection_failed": "Échec de la connexion SSH : {error}",
+    "tpl_working_directory_not_found": "Répertoire de travail introuvable : {path}",
+    "tpl_working_directory_not_directory": "Le répertoire de travail n’est pas un répertoire : {path}",
+    "tpl_identity_file_not_found": "Fichier d’identité introuvable : {path}",
+    "tpl_identity_file_not_file": "Le fichier d’identité n’est pas un fichier : {path}",
+    "tpl_program_not_found_in_path": "Programme introuvable dans PATH : {program}",
+    "tpl_program_not_found": "Programme introuvable : {program}",
+    "tpl_program_is_directory": "Le programme est un répertoire : {program}",
+    "tpl_program_not_executable": "Le programme n’est pas exécutable : {program}"
   }
 }

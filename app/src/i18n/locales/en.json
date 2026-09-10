@@ -117,11 +117,24 @@
     "err_invalid_port": "Port must be a number.",
     "err_missing_custom_draft": "Custom command draft is missing.",
     "err_missing_ssh_draft": "SSH command draft is missing.",
+    "err_ssh_port_positive": "SSH port must be greater than 0.",
+    "err_missing_target_folder": "Target folder is missing.",
+    "err_missing_parent_folder": "Parent folder is missing.",
+    "err_command_no_longer_exists": "Command no longer exists.",
 
     "tpl_edit_tab_title": "Edit: {title}",
     "tpl_launch_failed_title": "Failed to launch \"{title}\"",
     "tpl_launch_failed_body": "Command: {command}\nError: {error}",
     "tpl_terminal_init_failed": "Terminal tab initialization failed: {error}",
-    "tpl_palette_fallback_label": "Color {index}"
+    "tpl_palette_fallback_label": "Color {index}",
+    "tpl_ssh_connection_failed": "SSH connection failed: {error}",
+    "tpl_working_directory_not_found": "Working directory not found: {path}",
+    "tpl_working_directory_not_directory": "Working directory is not a directory: {path}",
+    "tpl_identity_file_not_found": "Identity file not found: {path}",
+    "tpl_identity_file_not_file": "Identity file is not a file: {path}",
+    "tpl_program_not_found_in_path": "Program not found in PATH: {program}",
+    "tpl_program_not_found": "Program not found: {program}",
+    "tpl_program_is_directory": "Program is a directory: {program}",
+    "tpl_program_not_executable": "Program is not executable: {program}"
   }
 }

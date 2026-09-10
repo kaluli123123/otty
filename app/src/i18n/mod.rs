@@ -131,13 +131,19 @@ impl Locale {
             .to_ascii_lowercase()
             .replace('_', "-");
 
-        // Chinese splits by script rather than by primary subtag, so the
-        // traditional-script regions and an explicit `Hant` map to zh-TW.
-        if normalized.starts_with("zh") {
-            let traditional = normalized.contains("hant")
-                || normalized.contains("-tw")
-                || normalized.contains("-hk")
-                || normalized.contains("-mo");
+        // Chinese splits by script rather than by primary subtag. An explicit
+        // script wins; otherwise traditional-script regions map to zh-TW.
+        if normalized.split('-').next() == Some("zh") {
+            if normalized.split('-').any(|subtag| subtag == "hans") {
+                return Self::ZhCn;
+            }
+            if normalized.split('-').any(|subtag| subtag == "hant") {
+                return Self::ZhTw;
+            }
+
+            let traditional = normalized
+                .split('-')
+                .any(|subtag| matches!(subtag, "tw" | "hk" | "mo"));
             return if traditional { Self::ZhTw } else { Self::ZhCn };
         }
 
@@ -208,21 +214,10 @@ pub(crate) fn set_locale(locale: Locale) {
     CURRENT_LOCALE.store(locale.index() as u8, Ordering::Relaxed);
 }
 
-/// Detect the preferred locale from the environment.
-///
-/// Checks the POSIX locale variables in the order the C library uses; an unset
-/// or unrecognized environment yields [`Locale::En`].
+/// Detect the preferred locale through the current platform's native source.
 pub(crate) fn detect_system_locale() -> Locale {
-    for name in ["LC_ALL", "LC_MESSAGES", "LANG"] {
-        let Ok(value) = std::env::var(name) else {
-            continue;
-        };
-        if !value.is_empty() {
-            return Locale::from_tag(&value);
-        }
-    }
-
-    Locale::En
+    let preference = sys_locale::get_locale();
+    locale_from_system_preference(preference.as_deref())
 }
 
 /// Return the translation of `key` in the active locale.
@@ -271,6 +266,87 @@ pub(crate) fn terminal_init_failed(error: &str) -> String {
     )
 }
 
+/// Build the message shown when an SSH connection cannot be established.
+pub(crate) fn ssh_connection_failed(error: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplSshConnectionFailed,
+        &[("error", error)],
+    )
+}
+
+/// Build the message shown when a working directory cannot be found.
+pub(crate) fn working_directory_not_found(path: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplWorkingDirectoryNotFound,
+        &[("path", path)],
+    )
+}
+
+/// Build the message shown when a working path is not a directory.
+pub(crate) fn working_directory_not_directory(path: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplWorkingDirectoryNotDirectory,
+        &[("path", path)],
+    )
+}
+
+/// Build the message shown when an SSH identity file cannot be found.
+pub(crate) fn identity_file_not_found(path: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplIdentityFileNotFound,
+        &[("path", path)],
+    )
+}
+
+/// Build the message shown when an SSH identity path is not a file.
+pub(crate) fn identity_file_not_file(path: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplIdentityFileNotFile,
+        &[("path", path)],
+    )
+}
+
+/// Build the message shown when a program cannot be found in `PATH`.
+pub(crate) fn program_not_found_in_path(program: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplProgramNotFoundInPath,
+        &[("program", program)],
+    )
+}
+
+/// Build the message shown when an explicit program path cannot be found.
+pub(crate) fn program_not_found(program: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplProgramNotFound,
+        &[("program", program)],
+    )
+}
+
+/// Build the message shown when a program path is a directory.
+pub(crate) fn program_is_directory(program: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplProgramIsDirectory,
+        &[("program", program)],
+    )
+}
+
+/// Build the message shown when a program path is not executable.
+pub(crate) fn program_not_executable(program: &str) -> String {
+    fill_in(
+        current_locale(),
+        Key::TplProgramNotExecutable,
+        &[("program", program)],
+    )
+}
+
 /// Return the translation of `key` in `locale`.
 ///
 /// Falls back to English when a key is absent, so a partial catalog degrades
@@ -284,6 +360,10 @@ fn text_in(locale: Locale, key: Key) -> &'static str {
         .strings
         .get(&key)
         .map_or("", String::as_str)
+}
+
+fn locale_from_system_preference(preference: Option<&str>) -> Locale {
+    preference.map_or(Locale::En, Locale::from_tag)
 }
 
 /// Return the label for the palette color at `index` in `locale`.
@@ -302,10 +382,33 @@ fn palette_label_in(locale: Locale, index: usize) -> String {
 
 /// Substitute `{name}` placeholders in the `locale` template behind `key`.
 fn fill_in(locale: Locale, key: Key, arguments: &[(&str, &str)]) -> String {
-    let mut text = text_in(locale, key).to_string();
-    for (name, value) in arguments {
-        text = text.replace(&format!("{{{name}}}"), value);
+    let template = text_in(locale, key);
+    let mut remaining = template;
+    let mut text = String::with_capacity(template.len());
+
+    while let Some((before, after_open)) = remaining.split_once('{') {
+        text.push_str(before);
+
+        let Some((name, after_close)) = after_open.split_once('}') else {
+            text.push('{');
+            text.push_str(after_open);
+            return text;
+        };
+
+        if let Some((_, value)) =
+            arguments.iter().find(|(argument, _)| *argument == name)
+        {
+            text.push_str(value);
+        } else {
+            text.push('{');
+            text.push_str(name);
+            text.push('}');
+        }
+
+        remaining = after_close;
     }
+
+    text.push_str(remaining);
 
     text
 }
@@ -328,7 +431,7 @@ fn catalog(locale: Locale) -> &'static Catalog {
 mod tests {
     use super::{
         Catalog, Key, Locale, PALETTE_LABEL_COUNT, catalog, fill_in,
-        palette_label_in, text_in,
+        locale_from_system_preference, palette_label_in, text_in,
     };
 
     #[test]
@@ -373,10 +476,12 @@ mod tests {
     fn given_chinese_tags_when_parsed_then_script_selects_the_variant() {
         assert_eq!(Locale::from_tag("zh_CN.UTF-8"), Locale::ZhCn);
         assert_eq!(Locale::from_tag("zh-Hans"), Locale::ZhCn);
+        assert_eq!(Locale::from_tag("zh-Hans_TW"), Locale::ZhCn);
         assert_eq!(Locale::from_tag("zh"), Locale::ZhCn);
         assert_eq!(Locale::from_tag("ZH-TW"), Locale::ZhTw);
         assert_eq!(Locale::from_tag("zh_HK"), Locale::ZhTw);
         assert_eq!(Locale::from_tag("zh-Hant"), Locale::ZhTw);
+        assert_eq!(Locale::from_tag("zh-Hant_CN"), Locale::ZhTw);
     }
 
     #[test]
@@ -396,6 +501,16 @@ mod tests {
         assert_eq!(Locale::from_tag("tlh"), Locale::En);
         assert_eq!(Locale::from_tag("C"), Locale::En);
         assert_eq!(Locale::from_tag(""), Locale::En);
+    }
+
+    #[test]
+    fn given_platform_preference_when_system_locale_resolved_then_platform_value_is_used()
+     {
+        assert_eq!(
+            locale_from_system_preference(Some("zh-Hans_TW")),
+            Locale::ZhCn
+        );
+        assert_eq!(locale_from_system_preference(None), Locale::En);
     }
 
     #[test]
@@ -502,6 +617,48 @@ mod tests {
     }
 
     #[test]
+    fn given_placeholder_text_in_argument_when_filled_then_argument_remains_verbatim()
+     {
+        assert_eq!(
+            fill_in(
+                Locale::En,
+                Key::TplLaunchFailedBody,
+                &[("command", "deploy {error}"), ("error", "boom")]
+            ),
+            "Command: deploy {error}\nError: boom"
+        );
+    }
+
+    #[test]
+    fn given_quick_launch_diagnostics_when_translated_then_visible_text_is_localized()
+     {
+        assert_eq!(
+            text_in(Locale::ZhCn, Key::ErrSshPortPositive),
+            "SSH 端口必须大于 0。"
+        );
+        assert_eq!(
+            text_in(Locale::ZhCn, Key::ErrMissingTargetFolder),
+            "找不到目标文件夹。"
+        );
+        assert_eq!(
+            fill_in(
+                Locale::ZhCn,
+                Key::TplWorkingDirectoryNotFound,
+                &[("path", "/tmp/project")]
+            ),
+            "找不到工作目录：/tmp/project"
+        );
+        assert_eq!(
+            fill_in(
+                Locale::ZhCn,
+                Key::TplProgramNotExecutable,
+                &[("program", "deploy")]
+            ),
+            "程序不可执行：deploy"
+        );
+    }
+
+    #[test]
     fn given_palette_index_when_labelled_then_named_and_fallback_labels_apply()
     {
         assert_eq!(palette_label_in(Locale::ZhCn, 0), "前景色");
@@ -519,12 +676,21 @@ mod tests {
 
     #[test]
     fn given_every_locale_when_templates_read_then_placeholders_survive() {
-        let required: [(Key, &[&str]); 5] = [
+        let required: [(Key, &[&str]); 14] = [
             (Key::TplEditTabTitle, &["{title}"]),
             (Key::TplLaunchFailedTitle, &["{title}"]),
             (Key::TplLaunchFailedBody, &["{command}", "{error}"]),
             (Key::TplTerminalInitFailed, &["{error}"]),
             (Key::TplPaletteFallbackLabel, &["{index}"]),
+            (Key::TplSshConnectionFailed, &["{error}"]),
+            (Key::TplWorkingDirectoryNotFound, &["{path}"]),
+            (Key::TplWorkingDirectoryNotDirectory, &["{path}"]),
+            (Key::TplIdentityFileNotFound, &["{path}"]),
+            (Key::TplIdentityFileNotFile, &["{path}"]),
+            (Key::TplProgramNotFoundInPath, &["{program}"]),
+            (Key::TplProgramNotFound, &["{program}"]),
+            (Key::TplProgramIsDirectory, &["{program}"]),
+            (Key::TplProgramNotExecutable, &["{program}"]),
         ];
 
         for locale in Locale::ALL {

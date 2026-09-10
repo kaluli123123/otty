@@ -117,11 +117,24 @@
     "err_invalid_port": "포트는 숫자여야 합니다.",
     "err_missing_custom_draft": "사용자 지정 명령 초안을 찾을 수 없습니다.",
     "err_missing_ssh_draft": "SSH 명령 초안을 찾을 수 없습니다.",
+    "err_ssh_port_positive": "SSH 포트는 0보다 커야 합니다.",
+    "err_missing_target_folder": "대상 폴더를 찾을 수 없습니다.",
+    "err_missing_parent_folder": "상위 폴더를 찾을 수 없습니다.",
+    "err_command_no_longer_exists": "명령이 더 이상 존재하지 않습니다.",
 
     "tpl_edit_tab_title": "편집: {title}",
     "tpl_launch_failed_title": "'{title}' 실행에 실패했습니다",
     "tpl_launch_failed_body": "명령: {command}\n오류: {error}",
     "tpl_terminal_init_failed": "터미널 탭 초기화에 실패했습니다: {error}",
-    "tpl_palette_fallback_label": "색 {index}"
+    "tpl_palette_fallback_label": "색 {index}",
+    "tpl_ssh_connection_failed": "SSH 연결 실패: {error}",
+    "tpl_working_directory_not_found": "작업 디렉터리를 찾을 수 없습니다: {path}",
+    "tpl_working_directory_not_directory": "작업 디렉터리가 디렉터리가 아닙니다: {path}",
+    "tpl_identity_file_not_found": "ID 파일을 찾을 수 없습니다: {path}",
+    "tpl_identity_file_not_file": "ID 파일이 파일이 아닙니다: {path}",
+    "tpl_program_not_found_in_path": "PATH에서 프로그램을 찾을 수 없습니다: {program}",
+    "tpl_program_not_found": "프로그램을 찾을 수 없습니다: {program}",
+    "tpl_program_is_directory": "프로그램이 디렉터리입니다: {program}",
+    "tpl_program_not_executable": "프로그램을 실행할 수 없습니다: {program}"
   }
 }

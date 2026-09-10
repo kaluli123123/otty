@@ -117,11 +117,24 @@
     "err_invalid_port": "Порт должен быть числом.",
     "err_missing_custom_draft": "Черновик пользовательской команды не найден.",
     "err_missing_ssh_draft": "Черновик команды SSH не найден.",
+    "err_ssh_port_positive": "Порт SSH должен быть больше 0.",
+    "err_missing_target_folder": "Целевая папка не найдена.",
+    "err_missing_parent_folder": "Родительская папка не найдена.",
+    "err_command_no_longer_exists": "Команда больше не существует.",
 
     "tpl_edit_tab_title": "Изменение: {title}",
     "tpl_launch_failed_title": "Не удалось запустить «{title}»",
     "tpl_launch_failed_body": "Команда: {command}\nОшибка: {error}",
     "tpl_terminal_init_failed": "Не удалось инициализировать вкладку терминала: {error}",
-    "tpl_palette_fallback_label": "Цвет {index}"
+    "tpl_palette_fallback_label": "Цвет {index}",
+    "tpl_ssh_connection_failed": "Не удалось установить SSH-соединение: {error}",
+    "tpl_working_directory_not_found": "Рабочий каталог не найден: {path}",
+    "tpl_working_directory_not_directory": "Рабочий путь не является каталогом: {path}",
+    "tpl_identity_file_not_found": "Файл идентификации не найден: {path}",
+    "tpl_identity_file_not_file": "Путь к файлу идентификации не является файлом: {path}",
+    "tpl_program_not_found_in_path": "Программа не найдена в PATH: {program}",
+    "tpl_program_not_found": "Программа не найдена: {program}",
+    "tpl_program_is_directory": "Программа является каталогом: {program}",
+    "tpl_program_not_executable": "Программа не является исполняемой: {program}"
   }
 }

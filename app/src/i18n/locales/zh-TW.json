@@ -117,11 +117,24 @@
     "err_invalid_port": "連接埠必須是數字。",
     "err_missing_custom_draft": "找不到自訂指令草稿。",
     "err_missing_ssh_draft": "找不到 SSH 指令草稿。",
+    "err_ssh_port_positive": "SSH 連接埠必須大於 0。",
+    "err_missing_target_folder": "找不到目標資料夾。",
+    "err_missing_parent_folder": "找不到上層資料夾。",
+    "err_command_no_longer_exists": "指令已不存在。",
 
     "tpl_edit_tab_title": "編輯：{title}",
     "tpl_launch_failed_title": "啟動「{title}」失敗",
     "tpl_launch_failed_body": "指令：{command}\n錯誤：{error}",
     "tpl_terminal_init_failed": "終端機分頁初始化失敗：{error}",
-    "tpl_palette_fallback_label": "色彩 {index}"
+    "tpl_palette_fallback_label": "色彩 {index}",
+    "tpl_ssh_connection_failed": "SSH 連線失敗：{error}",
+    "tpl_working_directory_not_found": "找不到工作目錄：{path}",
+    "tpl_working_directory_not_directory": "工作目錄路徑不是目錄：{path}",
+    "tpl_identity_file_not_found": "找不到身分檔案：{path}",
+    "tpl_identity_file_not_file": "身分檔案路徑不是檔案：{path}",
+    "tpl_program_not_found_in_path": "在 PATH 中找不到程式：{program}",
+    "tpl_program_not_found": "找不到程式：{program}",
+    "tpl_program_is_directory": "程式路徑是目錄：{program}",
+    "tpl_program_not_executable": "程式無法執行：{program}"
   }
 }

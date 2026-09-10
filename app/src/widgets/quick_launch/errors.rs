@@ -13,8 +13,42 @@ pub(crate) enum QuickLaunchError {
     TitleEmpty,
     #[error("{}", i18n::t(Key::ErrTitleDuplicate))]
     TitleDuplicate,
-    #[error("{message}")]
-    Validation { message: String },
+    /// A custom command has no program.
+    #[error("{}", i18n::t(Key::ErrProgramRequired))]
+    ProgramRequired,
+    /// An SSH command has no host.
+    #[error("{}", i18n::t(Key::ErrHostRequired))]
+    HostRequired,
+    /// An SSH command uses port zero.
+    #[error("{}", i18n::t(Key::ErrSshPortPositive))]
+    SshPortNotPositive,
+    /// An SSH connection attempt failed.
+    #[error("{}", i18n::ssh_connection_failed(.0))]
+    SshConnectionFailed(String),
+    /// A configured working directory does not exist.
+    #[error("{}", i18n::working_directory_not_found(.0))]
+    WorkingDirectoryNotFound(String),
+    /// A configured working path is not a directory.
+    #[error("{}", i18n::working_directory_not_directory(.0))]
+    WorkingDirectoryNotDirectory(String),
+    /// A configured SSH identity file does not exist.
+    #[error("{}", i18n::identity_file_not_found(.0))]
+    IdentityFileNotFound(String),
+    /// A configured SSH identity path is not a file.
+    #[error("{}", i18n::identity_file_not_file(.0))]
+    IdentityFileNotFile(String),
+    /// A program name could not be resolved through `PATH`.
+    #[error("{}", i18n::program_not_found_in_path(.0))]
+    ProgramNotFoundInPath(String),
+    /// An explicit program path does not exist.
+    #[error("{}", i18n::program_not_found(.0))]
+    ProgramNotFound(String),
+    /// An explicit program path points to a directory.
+    #[error("{}", i18n::program_is_directory(.0))]
+    ProgramIsDirectory(String),
+    /// An explicit program path is not executable.
+    #[error("{}", i18n::program_not_executable(.0))]
+    ProgramNotExecutable(String),
 }
 
 /// Errors emitted by quick launch wizard validation.

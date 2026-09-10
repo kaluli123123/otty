@@ -19,6 +19,10 @@ pub(crate) fn reduce(
             state.set_title(tab_id, title);
             Task::none()
         },
+        TabsIntent::RefreshSettingsTitle { title } => {
+            state.set_settings_title(title);
+            Task::none()
+        },
         TabsIntent::OpenTerminalTab { title } => {
             open_terminal_tab(state, title)
         },
@@ -266,6 +270,46 @@ mod tests {
 
         assert_eq!(state.len(), 2);
         assert_eq!(state.active_tab_id(), Some(settings_id));
+    }
+
+    #[test]
+    fn refresh_settings_title_updates_only_the_settings_tab() {
+        let mut state = TabsState::default();
+        let _ = reduce(&mut state, TabsIntent::OpenSettingsTab);
+        let settings_id =
+            state.active_tab_id().expect("settings tab should open");
+        let _ = reduce(
+            &mut state,
+            TabsIntent::OpenTerminalTab {
+                title: String::from("shell"),
+            },
+        );
+        let terminal_id =
+            state.active_tab_id().expect("terminal tab should open");
+
+        let _ = reduce(
+            &mut state,
+            TabsIntent::RefreshSettingsTitle {
+                title: String::from("Einstellungen"),
+            },
+        );
+
+        assert_eq!(
+            state
+                .tab_items()
+                .get(&settings_id)
+                .expect("settings tab should remain open")
+                .title(),
+            "Einstellungen"
+        );
+        assert_eq!(
+            state
+                .tab_items()
+                .get(&terminal_id)
+                .expect("terminal tab should remain open")
+                .title(),
+            "shell"
+        );
     }
 
     #[test]

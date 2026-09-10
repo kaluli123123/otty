@@ -184,6 +184,14 @@ pub(crate) enum Key {
     ErrMissingCustomDraft,
     /// Wizard validation: SSH draft absent.
     ErrMissingSshDraft,
+    /// SSH validation: port is not positive.
+    ErrSshPortPositive,
+    /// Wizard save target folder is missing.
+    ErrMissingTargetFolder,
+    /// Wizard save parent folder is missing.
+    ErrMissingParentFolder,
+    /// Wizard edit target no longer exists.
+    ErrCommandNoLongerExists,
 
     // Templates. These carry `{placeholder}` markers substituted at call time.
     /// Tab title for editing an existing quick launch. Placeholder: `{title}`.
@@ -196,12 +204,30 @@ pub(crate) enum Key {
     TplTerminalInitFailed,
     /// Label for a palette color with no name. Placeholder: `{index}`.
     TplPaletteFallbackLabel,
+    /// SSH connection failure. Placeholder: `{error}`.
+    TplSshConnectionFailed,
+    /// Missing working directory. Placeholder: `{path}`.
+    TplWorkingDirectoryNotFound,
+    /// Working path is not a directory. Placeholder: `{path}`.
+    TplWorkingDirectoryNotDirectory,
+    /// Missing SSH identity file. Placeholder: `{path}`.
+    TplIdentityFileNotFound,
+    /// SSH identity path is not a file. Placeholder: `{path}`.
+    TplIdentityFileNotFile,
+    /// Program is absent from `PATH`. Placeholder: `{program}`.
+    TplProgramNotFoundInPath,
+    /// Explicit program path is missing. Placeholder: `{program}`.
+    TplProgramNotFound,
+    /// Program path is a directory. Placeholder: `{program}`.
+    TplProgramIsDirectory,
+    /// Program path is not executable. Placeholder: `{program}`.
+    TplProgramNotExecutable,
 }
 
 impl Key {
     /// Every key in the catalogs, used by tests to verify full coverage.
     #[cfg(test)]
-    pub(super) const ALL: [Self; 82] = [
+    pub(super) const ALL: [Self; 95] = [
         Self::MenuCreateTab,
         Self::MenuCreateFolder,
         Self::MenuCreateQuickLaunch,
@@ -279,10 +305,23 @@ impl Key {
         Self::ErrInvalidPort,
         Self::ErrMissingCustomDraft,
         Self::ErrMissingSshDraft,
+        Self::ErrSshPortPositive,
+        Self::ErrMissingTargetFolder,
+        Self::ErrMissingParentFolder,
+        Self::ErrCommandNoLongerExists,
         Self::TplEditTabTitle,
         Self::TplLaunchFailedTitle,
         Self::TplLaunchFailedBody,
         Self::TplTerminalInitFailed,
         Self::TplPaletteFallbackLabel,
+        Self::TplSshConnectionFailed,
+        Self::TplWorkingDirectoryNotFound,
+        Self::TplWorkingDirectoryNotDirectory,
+        Self::TplIdentityFileNotFound,
+        Self::TplIdentityFileNotFile,
+        Self::TplProgramNotFoundInPath,
+        Self::TplProgramNotFound,
+        Self::TplProgramIsDirectory,
+        Self::TplProgramNotExecutable,
     ];
 }
